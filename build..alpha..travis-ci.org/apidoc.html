@@ -1,0 +1,259 @@
+<div class="apidocDiv">
+<style>
+/*csslint
+*/
+.apidocDiv {
+    background: #fff;
+    font-family: Arial, Helvetica, sans-serif;
+}
+.apidocDiv a[href] {
+    color: #33f;
+    font-weight: bold;
+    text-decoration: none;
+}
+.apidocDiv a[href]:hover {
+    text-decoration: underline;
+}
+.apidocCodeCommentSpan {
+    background: #bbf;
+    color: #000;
+    display: block;
+}
+.apidocCodeKeywordSpan {
+    color: #d00;
+    font-weight: bold;
+}
+.apidocCodePre {
+    background: #eef;
+    border: 1px solid;
+    color: #777;
+    padding: 5px;
+    white-space: pre-wrap;
+}
+.apidocFooterDiv {
+    margin-top: 20px;
+    text-align: center;
+}
+.apidocModuleLi {
+    margin-top: 10px;
+}
+.apidocSectionDiv {
+    border-top: 1px solid;
+    margin-top: 20px;
+}
+.apidocSignatureSpan {
+    color: #777;
+    font-weight: bold;
+}
+</style>
+<h1>api documentation for
+    <a
+
+        href="https://github.com/rvagg/bole#readme"
+
+    >bole (v3.0.2)</a>
+</h1>
+<h4>A tiny JSON logger</h4>
+<div class="apidocSectionDiv"><a
+    href="#apidoc.tableOfContents"
+    id="apidoc.tableOfContents"
+><h1>table of contents</h1></a><ol>
+
+    <li class="apidocModuleLi"><a href="#apidoc.module.bole">module bole</a><ol>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.bole.bole">
+            function <span class="apidocSignatureSpan"></span>bole
+            <span class="apidocSignatureSpan">(name)</span>
+            </a>
+
+        </li>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.bole.output">
+            function <span class="apidocSignatureSpan">bole.</span>output
+            <span class="apidocSignatureSpan">(opt)</span>
+            </a>
+
+        </li>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.bole.reset">
+            function <span class="apidocSignatureSpan">bole.</span>reset
+            <span class="apidocSignatureSpan">()</span>
+            </a>
+
+        </li>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.bole.setFastTime">
+            function <span class="apidocSignatureSpan">bole.</span>setFastTime
+            <span class="apidocSignatureSpan">(b)</span>
+            </a>
+
+        </li>
+
+    </ol></li>
+
+</ol></div>
+
+<div class="apidocSectionDiv">
+<h1><a href="#apidoc.module.bole" id="apidoc.module.bole">module bole</a></h1>
+
+
+    <h2>
+        <a href="#apidoc.element.bole.bole" id="apidoc.element.bole.bole">
+        function <span class="apidocSignatureSpan"></span>bole
+        <span class="apidocSignatureSpan">(name)</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">function bole(name) {
+  function boleLogger (subname) {
+    return bole(name + &#x27;:&#x27; + subname)
+  }
+
+  function makeLogger (p, level) {
+    p[level] = levelLogger(level, name)
+    return p
+  }
+
+  return levels.reduce(makeLogger, boleLogger)
+}</pre></li>
+    <li>example usage<pre class="apidocCodePre">n/a</pre></li>
+    </ul>
+
+
+
+    <h2>
+        <a href="#apidoc.element.bole.output" id="apidoc.element.bole.output">
+        function <span class="apidocSignatureSpan">bole.</span>output
+        <span class="apidocSignatureSpan">(opt)</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">function output(opt) {
+  var i = 0, b
+
+  if (Array.isArray(opt)) {
+    opt.forEach(bole.output)
+    return bole
+  }
+
+  if (typeof opt.level !== &#x27;string&#x27;)
+    throw new TypeError(&#x27;Must provide a &#x22;level&#x22; option&#x27;)
+
+  for (; i &#x3c; levels.length; i++) {
+    if (!b &#x26;&#x26; levels[i] === opt.level)
+      b = true
+
+    if (b) {
+      if (opt.stream &#x26;&#x26; objectMode(opt.stream))
+        hasObjMode = true
+      individual[levels[i]].push(opt.stream)
+    }
+  }
+
+  return bole
+}</pre></li>
+    <li>example usage<pre class="apidocCodePre">...
+```
+
+**main.js**
+```js
+var bole = require(&#x27;bole&#x27;)
+var mod  = require(&#x27;./mymodule&#x27;)
+
+bole.<span class="apidocCodeKeywordSpan">output</span>({
+  level: &#x27;info&#x27;,
+  stream: process.stdout
+})
+
+mod.derp()
+```
+...</pre></li>
+    </ul>
+
+
+
+    <h2>
+        <a href="#apidoc.element.bole.reset" id="apidoc.element.bole.reset">
+        function <span class="apidocSignatureSpan">bole.</span>reset
+        <span class="apidocSignatureSpan">()</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">function reset() {
+  levels.forEach(function (level) {
+    individual[level].splice(0, individual[level].length)
+  })
+  individual.fastTime = false
+  return bole
+}</pre></li>
+    <li>example usage<pre class="apidocCodePre">...
+```js
+bole.output([
+  { level: &#x27;debug&#x27;, stream: fs.createWriteStream(&#x27;app.log&#x27;) },
+  { level: &#x27;info&#x27;, stream: process.stdout }
+])
+```
+
+### bole.<span class="apidocCodeKeywordSpan">reset</span>()
+
+Clears all output streams from the application
+
+### bole.setFastTime()
+
+If speed is something you care about and you can handle time in milliseconds since epoch (`Date.now()`) rather than the full ISO
+ string (`new Date().toISOString()`) in your logs then use `bole.setFastTime(true)` to shave off some precious microseconds.
+...</pre></li>
+    </ul>
+
+
+
+    <h2>
+        <a href="#apidoc.element.bole.setFastTime" id="apidoc.element.bole.setFastTime">
+        function <span class="apidocSignatureSpan">bole.</span>setFastTime
+        <span class="apidocSignatureSpan">(b)</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">function setFastTime(b) {
+  if (!arguments.length)
+    individual.fastTime = true
+  else
+    individual.fastTime = b
+  return bole
+}</pre></li>
+    <li>example usage<pre class="apidocCodePre">...
+])
+```
+
+### bole.reset()
+
+Clears all output streams from the application
+
+### bole.<span class="apidocCodeKeywordSpan">setFastTime</span>()
+
+If speed is something you care about and you can handle time in milliseconds since epoch (`Date.now()`) rather than the full ISO
+ string (`new Date().toISOString()`) in your logs then use `bole.setFastTime(true)` to shave off some precious microseconds.
+
+Note that this will reset to the default of `false` when you use `bole.reset()`
+
+## Additional features
+...</pre></li>
+    </ul>
+
+
+</div>
+
+<div class="apidocFooterDiv">
+    [ this document was created with
+    <a href="https://github.com/kaizhu256/node-utility2" target="_blank">utility2</a>
+    ]
+</div>
+</div>
